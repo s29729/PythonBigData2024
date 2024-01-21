@@ -1,0 +1,71 @@
+!pip install -U openai-whisper
+!pip install --upgrade --no-deps --force-reinstall git+https://github.com/openai/whisper.git
+!pip install --upgrade openai
+!pip install moviepy
+
+import openai
+import whisper
+openai.api_key = "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"
+
+###############Prompting
+
+##Test1
+
+import openai
+
+def query_openai(prompt):
+    response = openai.Completion.create(
+        engine="text-davinci-004",  # Specify the engine (model) here
+        prompt=prompt,
+        max_tokens=150
+    )
+    return response.choices[0].text.strip()
+
+##Test2
+
+response = openai.Completion.create(
+    engine="gpt-3.5-turbo",  # Replace with the correct engine name
+    prompt="What's the weather like in Boston today?",
+    max_tokens=100
+)
+print(response.choices[0].text.strip())
+
+##Test3
+
+response = openai.Completion.create(
+    engine="gpt-4",
+    prompt="How do I output all files in a directory using Python?",
+    max_tokens=100
+)
+print(response.choices[0].text.strip())
+
+##Test4
+
+prompt = f"Reformat this text by making an end user instruction: {result}"
+formatted_result = query_openai(prompt)
+print(formatted_result)
+
+###############Transcribing
+
+model = whisper.load_model("base")
+result = model.transcribe("MSTeams video.mp4")
+print(result["text"])
+
+###############Cutting the video
+
+from moviepy.editor import VideoFileClip, concatenate_videoclips
+
+def cut_video(video_path, timestamps):
+    video = VideoFileClip(video_path)
+    clips = []
+
+    for start, end in timestamps:
+        clips.append(video.subclip(start, end))
+
+    final_clip = concatenate_videoclips(clips)
+    final_clip.write_videofile("output_video.mp4")
+
+# Example usage
+timestamps = [('00:00:30', '00:01:00'), ('00:02:00', '00:02:10')]
+video_path = "MSTeams video.mp4"  # Replace with your video file path
+cut_video(video_path, timestamps)
